@@ -9,11 +9,11 @@ class CustomerCounter:
     def __init__(self):
         self.customers = {}
 
-    def add(self, order):
-        if order[0] in self.customers:
-            self.customers[order[0]].add(order[1])
+    def add(self, customer, order):
+        if customer in self.customers:
+            self.customers[customer].add(order)
         else:
-            self.customers[order[0]] = set(order[1])
+            self.customers[customer] = set(order)
 
     def get_count(self):
         for key in self.customers:
@@ -23,8 +23,7 @@ class CustomerCounter:
     def process_chunk(self, chunk):
         for line in chunk:
             parts = line.split(';')
-            order = (parts[0], parts[1])
-            self.add(order)
+            self.add(parts[0], parts[1])
 
     def merge(self, customer_dict):
         for key in customer_dict:
@@ -42,9 +41,8 @@ def read_dataset(filename):
     return file.readlines()
 
 
-def find_top_10_customers():
-    lines = read_dataset("sales-data.txt")
-    chunks = 12
+def find_top_10_customers(lines):
+    chunks = 4
     chunk_size = int(len(lines) / chunks + 1)
     counters = []
     for i in range(chunks):
@@ -61,7 +59,8 @@ def find_top_10_customers():
 
 
 if __name__ == '__main__':
+    lines = read_dataset("../sales-data.txt")
     start = time.time()
     #cProfile.run("find_top_10_customers()", sort="cumtime")
-    find_top_10_customers()
+    find_top_10_customers(lines)
     print("duration " + str(time.time() - start))
